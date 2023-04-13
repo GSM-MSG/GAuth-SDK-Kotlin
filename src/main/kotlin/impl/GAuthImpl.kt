@@ -49,7 +49,7 @@ class GAuthImpl(
         GAuthToken(getToken(code, clientId, clientSecret, redirectUri))
 
     override fun generateCode(email: String, password: String): GAuthCode {
-        val body = hashMapOf<String, String>(
+        val body = hashMapOf(
             "email" to email,
             "password" to password
         )
@@ -90,7 +90,7 @@ class GAuthImpl(
         val request = HttpGet(url)
         request.addHeader("Authorization", token)
 
-        val client = getClient(request)
+        val client = getClient()
         val response = getResponse(client, request)
         val responseStatus = getResponseStatus(response)
 
@@ -118,7 +118,7 @@ class GAuthImpl(
             request.entity = StringEntity(json)
         }
 
-        val client = getClient(request)
+        val client = getClient()
         val response = getResponse(client, request)
         val responseStatus = getResponseStatus(response)
 
@@ -152,7 +152,7 @@ class GAuthImpl(
             request.entity = StringEntity(json)
         }
 
-        val client = getClient(request)
+        val client = getClient()
         val response = getResponse(client, request)
         val responseStatus = getResponseStatus(response)
 
@@ -168,7 +168,7 @@ class GAuthImpl(
         return mapper.readValue(responseBody, typeReference)
     }
 
-    private fun getClient(request: HttpRequestBase) = HttpClientBuilder.create().build()
+    private fun getClient() = HttpClientBuilder.create().build()
 
     private fun getResponse(client: CloseableHttpClient, request: HttpRequestBase) = client.execute(request)
 
