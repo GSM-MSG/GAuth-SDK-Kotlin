@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets
 
 class GAuthImpl(
     private val mapper: ObjectMapper,
-): GAuth {
+) : GAuth {
 
     companion object {
         const val GAUTH_SERVER_URL = "https://server.gauth.co.kr/oauth";
