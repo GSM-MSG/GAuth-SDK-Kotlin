@@ -38,7 +38,8 @@ class GAuthImpl(
         clientSecret: String,
         redirectUri: String,
     ): GAuthToken {
-        TODO("Not yet implemented")
+        val code = generateCode(email, password).code
+        return GAuthToken(getToken(code, clientId, clientSecret, redirectUri))
     }
 
     override fun generateToken(code: String,
@@ -47,12 +48,19 @@ class GAuthImpl(
                                redirectUri: String
     ): GAuthToken =
         GAuthToken(getToken(code, clientId, clientSecret, redirectUri))
+
     override fun generateCode(email: String, password: String): GAuthCode {
-        TODO("Not yet implemented")
+        val body = hashMapOf<String, String>(
+            "email" to email,
+            "password" to password
+        )
+        val code = sendPostGAuthServer(body, null, "/code").get("code")
+        return GAuthCode(code!!)
     }
 
     override fun refresh(refreshToken: String): GAuthToken {
-        TODO("Not yet implemented")
+        val refreshHeader = if (refreshToken.startsWith("Bearer ")) refreshToken else "Bearer $refreshToken"
+        return GAuthToken(sendPatchGAuthServer(null, refreshHeader, "/user", TokenType.REFRESH))
     }
 
     override fun getUserInfo(accessToken: String): GAuthUserInfo {
@@ -76,8 +84,8 @@ class GAuthImpl(
     private fun sendPostGAuthServer(body: Map<String, String>, token: String?, url: String): Map<String, String> =
         sendPost(body, token, GAUTH_SERVER_URL + url)
 
-    private fun sendPatchServer(body: Map<String, String>, token: String?, url: String, tokenType: TokenType) =
-        sendPatch(body, token, GAUTH_SERVER_URL + url , tokenType)
+    private fun sendPatchGAuthServer(body: Map<String, String>?, token: String?, url: String, tokenType: TokenType) =
+        sendPatch(body , token, GAUTH_SERVER_URL + url , tokenType)
 
     private fun sendGet(token: String?, url: String): Map<String, Any> {
         val request = HttpGet(url)
@@ -127,7 +135,7 @@ class GAuthImpl(
         return mapper.readValue(responseBody, typeReference)
     }
 
-    private fun sendPatch(body: Map<String, String>, token: String?, url: String, tokenType: TokenType): Map<String, String> {
+    private fun sendPatch(body: Map<String, String>?, token: String?, url: String, tokenType: TokenType): Map<String, String> {
         val request = HttpPatch(url)
         request.apply {
             setHeader("Accept", "application/json");
