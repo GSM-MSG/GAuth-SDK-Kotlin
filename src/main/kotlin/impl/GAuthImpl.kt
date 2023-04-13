@@ -1,9 +1,9 @@
 package impl
 
 import GAuth
-import GAuthCode
-import GAuthToken
-import GAuthUserInfo
+import response.GAuthCode
+import response.GAuthToken
+import response.GAuthUserInfo
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import enums.TokenType

@@ -1,3 +1,5 @@
+package response
+
 data class GAuthUserInfo(
     val email: String,
     val name: String,
