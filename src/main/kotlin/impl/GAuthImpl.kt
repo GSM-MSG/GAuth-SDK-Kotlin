@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import enums.TokenType
 import exception.GAuthException
+import org.apache.http.HttpStatus
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPatch
@@ -54,7 +55,7 @@ class GAuthImpl(
             "password" to password
         )
         val code = sendPostGAuthServer(body, null, "/code").get("code")
-        return GAuthCode(code!!)
+        return GAuthCode(code ?: throw GAuthException(HttpStatus.SC_NOT_FOUND))
     }
 
     override fun refresh(refreshToken: String): GAuthToken {
