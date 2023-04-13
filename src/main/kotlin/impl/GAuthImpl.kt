@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import enums.TokenType
 import exception.GAuthException
+import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClientBuilder
@@ -48,7 +49,8 @@ class GAuthImpl(
     }
 
     override fun getUserInfo(accessToken: String): GAuthUserInfo {
-        TODO("Not yet implemented")
+        val authHeader = if (accessToken.startsWith("Bearer ")) accessToken else "Bearer $accessToken"
+        return GAuthUserInfo(sendGetResourceServer(authHeader, "/user"))
     }
 
     private fun getToken(code: String, clientId: String, clientSecret: String, redirectUri: String): Map<String, String> {
@@ -61,9 +63,27 @@ class GAuthImpl(
         return sendPostGAuthServer(body, null, "/token")
     }
 
+    private fun sendGetResourceServer(token: String?, url: String) =
+        sendGet(token, RESOURCE_SERVER_URL + url)
+
     private fun sendPostGAuthServer(body: Map<String, String>, token: String?, url: String): Map<String, String> =
         sendPost(body, token, GAUTH_SERVER_URL + url)
 
+
+    private fun sendGet(token: String?, url: String): Map<String, Any> {
+        val request = HttpGet(url)
+        request.addHeader("Authorization", token)
+        val response = HttpClientBuilder.create().build().execute(request)
+        val responseStatus = response.statusLine.statusCode
+
+        if(responseStatus != 200)
+            throw GAuthException(responseStatus)
+        val bufferedReader = BufferedReader(InputStreamReader(response.entity.content, StandardCharsets.UTF_8))
+        val responseBody = bufferedReader.readLine()
+        val typeReference: TypeReference<Map<String, Any>> = object : TypeReference<Map<String, Any>>() {}
+        bufferedReader.close()
+        return mapper.readValue(responseBody, typeReference)
+    }
 
     private fun sendPost(body: Map<String, String>, token: String?, url: String): Map<String, String> {
         val request = HttpPost(url)
