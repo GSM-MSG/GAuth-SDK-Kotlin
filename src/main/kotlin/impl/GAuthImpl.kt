@@ -8,9 +8,14 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import enums.TokenType
 import exception.GAuthException
+import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPatch
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpRequestBase
+import org.apache.http.entity.ContentType
 import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
 import org.json.simple.JSONObject
 import java.io.BufferedReader
@@ -36,10 +41,12 @@ class GAuthImpl(
         TODO("Not yet implemented")
     }
 
-    override fun generateToken(code: String, clientId: String, clientSecret: String, redirectUri: String): GAuthToken {
-        TODO("Not yet implemented")
-    }
-
+    override fun generateToken(code: String,
+                               clientId: String,
+                               clientSecret: String,
+                               redirectUri: String
+    ): GAuthToken =
+        GAuthToken(getToken(code, clientId, clientSecret, redirectUri))
     override fun generateCode(email: String, password: String): GAuthCode {
         TODO("Not yet implemented")
     }
@@ -69,12 +76,16 @@ class GAuthImpl(
     private fun sendPostGAuthServer(body: Map<String, String>, token: String?, url: String): Map<String, String> =
         sendPost(body, token, GAUTH_SERVER_URL + url)
 
+    private fun sendPatchServer(body: Map<String, String>, token: String?, url: String, tokenType: TokenType) =
+        sendPatch(body, token, GAUTH_SERVER_URL + url , tokenType)
 
     private fun sendGet(token: String?, url: String): Map<String, Any> {
         val request = HttpGet(url)
         request.addHeader("Authorization", token)
-        val response = HttpClientBuilder.create().build().execute(request)
-        val responseStatus = response.statusLine.statusCode
+
+        val client = getClient(request)
+        val response = getResponse(client, request)
+        val responseStatus = getResponseStatus(response)
 
         if(responseStatus != 200)
             throw GAuthException(responseStatus)
@@ -95,14 +106,14 @@ class GAuthImpl(
             addHeader("Authorization", token)
         }
 
-        if(body.isNotEmpty()){
+        body?.let {
             val json = JSONObject(body).toJSONString()
             request.entity = StringEntity(json)
         }
 
-        val client = HttpClientBuilder.create().build()
-        val response = client.execute(request)
-        val responseStatus = response.statusLine.statusCode
+        val client = getClient(request)
+        val response = getResponse(client, request)
+        val responseStatus = getResponseStatus(response)
 
         if(responseStatus != 200)
             throw GAuthException(responseStatus)
@@ -116,5 +127,43 @@ class GAuthImpl(
         return mapper.readValue(responseBody, typeReference)
     }
 
+    private fun sendPatch(body: Map<String, String>, token: String?, url: String, tokenType: TokenType): Map<String, String> {
+        val request = HttpPatch(url)
+        request.apply {
+            setHeader("Accept", "application/json");
+            setHeader("Connection", "keep-alive");
+            setHeader("Content-Type", "application/json");
+        }
 
+        if(tokenType == TokenType.ACCESS)
+            request.setHeader("Authorization", token)
+        else
+            request.addHeader("refreshToken", token)
+
+        body?.let {
+            val json = JSONObject(it).toString()
+            request.entity = StringEntity(json)
+        }
+
+        val client = getClient(request)
+        val response = getResponse(client, request)
+        val responseStatus = getResponseStatus(response)
+
+        if(responseStatus != 200)
+            throw GAuthException(responseStatus)
+
+        val bufferedReader = BufferedReader(InputStreamReader(response.entity.content, StandardCharsets.UTF_8))
+        val responseBody = bufferedReader.readLine()
+        bufferedReader.close()
+
+        val typeReference: TypeReference<Map<String, String>> = object : TypeReference<Map<String, String>>() {}
+
+        return mapper.readValue(responseBody, typeReference)
+    }
+
+    private fun getClient(request: HttpRequestBase) = HttpClientBuilder.create().build()
+
+    private fun getResponse(client: CloseableHttpClient, request: HttpRequestBase) = client.execute(request)
+
+    private fun getResponseStatus(response: CloseableHttpResponse) = response.statusLine.statusCode
 }
