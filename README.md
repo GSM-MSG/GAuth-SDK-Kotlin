@@ -17,12 +17,12 @@ maven { url = uri("https://jitpack.io") }
 dependencies
 ```gradle
 // build.gradle
-implementation 'com.github.GSM-MSG:GAuth-SDK-Java:v2.0.0'
+implementation 'com.github.GSM-MSG:GAuth-SDK-Kotlin:v1.0.0'
 
 // or
 
 // build.gradle.kt
-implementation("com.github.GSM-MSG:GAuth-SDK-Java:v2.0.0")
+implementation("com.github.GSM-MSG:GAuth-SDK-Kotlin:v1.0.0")
 ```
 
 ### Maven
