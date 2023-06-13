@@ -55,6 +55,8 @@ public GAuth gauth() {
 }
 ```
 
+<br>
+
 ### DI
 ```java
 @Component
@@ -69,9 +71,8 @@ public class Component{
 
 <br>
 
-## 사용법
 
-### 코드발급
+## 코드발급
 해당 메서드를 통해 발급 가능
 ```java
 gAuth.generateCode(email, password);
@@ -85,7 +86,9 @@ public class GAuthCode {
 
 코드 발급후 해당 객체를 리턴한다.
 
-### 토큰 발급
+<br>
+
+## 토큰 발급
 
 ```java
 gAuth.generateToken(email, password, clientId, clientSecret, redirectUri);
@@ -104,7 +107,9 @@ public class GAuthToken {
 ```
 토큰 발급 후 해당 객체를 리턴한다.
 
-### 토큰 재발급
+<br>
+
+## 토큰 재발급
 
 refreshToken을 통해서 토큰을 발급할 수 있다.
 
@@ -120,7 +125,9 @@ public class GAuthToken {
 ```
 토큰 발급 후 해당 객체를 리턴한다.
 
-### 유저 정보
+<br>
+
+## 유저 정보
 
 ```java
 gAuth.getUserInfo(accessToken);
@@ -145,6 +152,8 @@ public class GAuthUserInfo {
   
 > grade, classNum, num, number, gender, profileUrl은 nullable로  
 > GAuth SDK Java는 Type!를 반환하지만(문제는 없음) GAuth SDK Kotlin은 Type?를 반환한다.
+
+<br>
 
 ### Exception
 응답코드가 200이 아니면 예외코드를 담은 GAuthException을 throw한다.
