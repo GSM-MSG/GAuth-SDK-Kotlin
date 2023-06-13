@@ -27,7 +27,7 @@ implementation("com.github.GSM-MSG:GAuth-SDK-Java:v2.0.0")
 
 ### Maven
 repositories
-```maven
+```html
 <repository>
     <id>jitpack.io</id>
     <url>https://jitpack.io</url>
@@ -35,7 +35,7 @@ repositories
 ```
 
 dependencies
-```maven
+```html
 <dependency>
 	  <groupId>com.github.GSM-MSG</groupId>
 	  <artifactId>GAuth-SDK-Java</artifactId>
