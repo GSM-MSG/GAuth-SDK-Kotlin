@@ -47,7 +47,7 @@ dependencies
 
 ## Configuration
 
-### Bean 등록
+### Bean 
 ```java
 @Bean
 public GAuth gauth() {
