@@ -72,7 +72,7 @@ public class Component{
 <br>
 
 
-## 코드발급
+## Code
 해당 메서드를 통해 발급 가능
 ```java
 gAuth.generateCode(email, password);
@@ -88,7 +88,7 @@ public class GAuthCode {
 
 <br>
 
-## 토큰 발급
+## Token
 
 ```java
 gAuth.generateToken(email, password, clientId, clientSecret, redirectUri);
@@ -109,7 +109,7 @@ public class GAuthToken {
 
 <br>
 
-## 토큰 재발급
+## Refresh Token
 
 refreshToken을 통해서 토큰을 발급할 수 있다.
 
@@ -127,7 +127,7 @@ public class GAuthToken {
 
 <br>
 
-## 유저 정보
+## User Info
 
 ```java
 gAuth.getUserInfo(accessToken);
