@@ -38,7 +38,7 @@ dependencies
 ```html
 <dependency>
 	  <groupId>com.github.GSM-MSG</groupId>
-	  <artifactId>GAuth-SDK-Java</artifactId>
+	  <artifactId>GAuth-SDK-Kotlin</artifactId>
 	  <version>v2.0.0</version>
 </dependency>
 ```
