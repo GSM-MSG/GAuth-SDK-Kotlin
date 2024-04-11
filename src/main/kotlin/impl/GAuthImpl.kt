@@ -27,8 +27,8 @@ class GAuthImpl(
 ) : GAuth {
 
     companion object {
-        const val GAUTH_SERVER_URL = "https://server.gauth.co.kr/oauth";
-        const val RESOURCE_SERVER_URL = "https://open.gauth.co.kr"
+        const val GAUTH_SERVER_URL = "https://port-0-gauth-backend-85phb42bluutn9a7.sel5.cloudtype.app/oauth";
+        const val RESOURCE_SERVER_URL = "https://port-0-gauth-resource-server-71t02clq411q18.sel4.cloudtype.app"
     }
 
     override fun generateToken(
